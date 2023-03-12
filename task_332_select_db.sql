@@ -16,12 +16,14 @@ WHERE duration >= 210;
 
 -- 3.4 Находит названия сборников, вышедших в период с 2018 по 2020 год включительно.
 SELECT name FROM collections
-WHERE year >= 2018 AND year <= 2020;
+--WHERE year >= 2018 AND year <= 2020
+WHERE year BETWEEN 2018 AND 2020;    -- Изменил по рекомендации проверяющего, Олег Булыгин.
 
 -- 3.5 Находит исполнителей, чьё имя состоит из одного слова.
 SELECT nickname FROM singers
-WHERE NOT (nickname LIKE '% %' OR nickname LIKE '%-%');
 --WHERE nickname NOT LIKE '% %' AND nickname NOT LIKE '%-%';
+--WHERE NOT (nickname LIKE '% %' OR nickname LIKE '%-%')
+WHERE NOT (nickname iLIKE '% %' OR nickname iLIKE '%-%');    -- Изменил по рекомендации проверяющего, Олег Булыгин.
 
 -- 3.6 Находит названия треков, которые содержат слово «мой» или «my».
 SELECT name FROM tracks
