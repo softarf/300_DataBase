@@ -40,23 +40,31 @@ def working_from_Python() -> str:
                     add_phone(cur, customer_id, phone)
 
             print("\n3. Находим id Василия, в данном случае - по имени.")
-            vas_id = find_client(cur, first_name='Василий')[0][0]
-            print("   id Василия:", vas_id)
+            found_result = find_client(cur, first_name='Василий')
+            if found_result[1] == 1:
+                vas_id = found_result[0][0]
+                print("Id Василия:", vas_id)
 
             print("\n4. Добавляем телефон для Василия.")
             add_phone(cur, vas_id, '008')
 
-            print("\n5. Меняем данные (фамилию) у клиента Оксана. Находим id Оксаны по фамилии.")
-            oksana_id = find_client(cur, last_name='Шукшина')[0][0]
-            change_client(cur, oksana_id, last_name='Сидорова')
+            print("\n5. Меняем данные (фамилию) у клиента Оксана. Находим id Оксаны по фамилии Шукшина.")
+            found_result = find_client(cur, last_name='Шукшина')
+            if found_result[1] == 1:
+                oksana_id = found_result[0][0]
+                change_client(cur, oksana_id, last_name='Сидорова')
 
             print("\n6. Удаляем телефон у Петра. Находим id Петра по email-у.")
-            peter_id = find_client(cur, email='peter@mail.ru')[0][0]
-            delete_phone(cur, peter_id, '004')
+            found_result = find_client(cur, email='peter@mail.ru')
+            if found_result[1] == 1:
+                peter_id = found_result[0][0]
+                delete_phone(cur, peter_id, '004')
 
             print("\n7. Удаляем клиента Алиса. Находим id Алисы по телефону.")
-            alisa_id = find_client(cur, phone='005')[0][0]
-            delete_client(cur, alisa_id)
+            found_result = find_client(cur, phone='005')
+            if found_result[1] == 1:
+                alisa_id = found_result[0][0]
+                delete_client(cur, alisa_id)
 
     conn.close()  # Не понятно зачем? Контекстный менеджер разве этого не делает?
     return "\nПрограмма 'working_from_Python' отработала."
