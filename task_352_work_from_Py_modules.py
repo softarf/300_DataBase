@@ -53,9 +53,9 @@ def add_phone(cursor, client_id, phone):
 def change_one_parameter(cursor, client_id, attribute_name, new_value):
     """ Меняет одну характеристику клиента на новое значение. """
     stmt = sql.SQL("""
-                   UPDATE customers SET {attr} = %s
-                   WHERE customer_id = %s;
-                   """).format(attr=sql.Identifier(attribute_name))
+       UPDATE customers SET {attr} = %s
+       WHERE customer_id = %s;
+    """).format(attr=sql.Identifier(attribute_name))
     cursor.execute(stmt, (new_value, client_id))
 
 
@@ -76,22 +76,21 @@ def delete_phone(cursor, customer_id, phone):
         DELETE FROM phones
         WHERE phone_number = %s AND customer_id = %s RETURNING phone_id;
     """, (phone, customer_id))
-    phone_id = cursor.fetchone()[0]
+    res = cursor.fetchone()
+    if res is not None:
+        phone_id = res[0]
+    else:
+        phone_id = 0
+        print(f"У клиента с id '{customer_id}' не удалось удалить телефон '{phone}'.")
     return phone_id
 
 
 def delete_client(cursor, customer_id):
     """ 6. Удаляет существующего клиента. """
     cursor.execute("""
-        SELECT phone_id FROM phones
+        DELETE FROM phones
         WHERE customer_id = %s;
     """, (customer_id, ))
-    find_list = [item[0] for item in cursor.fetchall()]
-    for item in find_list:
-        cursor.execute("""
-            DELETE FROM phones
-            WHERE phone_id = %s;
-        """, (item, ))
     cursor.execute("""
         DELETE FROM customers
         WHERE customer_id = %s RETURNING customer_id;
@@ -101,13 +100,13 @@ def delete_client(cursor, customer_id):
 
 
 def find_by_value(cursor, table_name, attribute_name, find_value, records_ids_list=None):
-    """ Выполняет поиск в заданной таблице по заданному атрибуту,
+    """ Выполняет поиск id клиента в заданной таблице по заданному атрибуту,
         возможно, из заданного списка претендентов. """
     find_list = []
     select_query = """
-            SELECT customer_id FROM {select_table}
-                WHERE {select_attribute} = %s;
-            """
+        SELECT customer_id FROM {select_table}
+            WHERE {select_attribute} = %s;
+    """
     query_item = (find_value, )
     if records_ids_list is not None and records_ids_list:
         select_query = (select_query[: select_query.rindex(';')]
@@ -138,9 +137,9 @@ def find_client(cursor, first_name=None, last_name=None, email=None, phone=None)
     if first_name is not None:
         found_ids_list = find_by_value(cursor, 'customers', 'first_name', first_name)
         if found_ids_list and last_name is not None:
-                found_ids_list = find_by_value(cursor, 'customers', 'last_name', last_name, found_ids_list)
-                if found_ids_list and email is not None:
-                    found_ids_list = find_by_value(cursor, 'customers', 'email', email, found_ids_list)
+            found_ids_list = find_by_value(cursor, 'customers', 'last_name', last_name, found_ids_list)
+        if found_ids_list and email is not None:
+            found_ids_list = find_by_value(cursor, 'customers', 'email', email, found_ids_list)
     else:
         if last_name is not None:
             found_ids_list = find_by_value(cursor, 'customers', 'last_name', last_name)
