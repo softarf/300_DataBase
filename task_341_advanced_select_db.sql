@@ -182,6 +182,23 @@ SELECT s.nickname AS singer_nickname,
     LEFT JOIN singers_albums USING(album_id)
     LEFT JOIN singers AS s USING(singer_id);
 
+-- Рекомендация от преподавателя по заданию 8. (Остальные задания приняты 21.03.23).
+SELECT Artist.Name AS Artist FROM ArtistAlbum
+    JOIN Artist ON ArtistAlbum.ArtistId = Artist.Id
+    JOIN Album ON ArtistAlbum.AlbumId = Album.Id
+    JOIN Track ON Album.Id = Track.AlbumId
+    WHERE Track.Duration = (SELECT MIN(Duration) FROM Track);
+-- "Перефразировал..."
+SELECT s.nickname AS singer_nickname,
+       t.name AS track_name,
+       t.duration AS min_duration
+    FROM singers AS s
+    LEFT JOIN singers_albums USING(singer_id)
+    LEFT JOIN albums USING(album_id)
+    LEFT JOIN tracks AS t USING(album_id)
+    WHERE t.duration = (SELECT MIN(duration) FROM tracks)
+;
+
 
 -- 4.9 Находит названия альбомов, содержащих наименьшее количество треков.
 WITH tc AS (
