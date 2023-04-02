@@ -104,8 +104,8 @@ def find_by_value(cursor, table_name, attribute_name, find_value, records_ids_li
         возможно, из заданного списка претендентов. """
     find_list = []
     select_query = """
-        SELECT customer_id FROM {select_table}
-            WHERE {select_attribute} = %s;
+                   SELECT customer_id FROM {select_table}
+                       WHERE {select_attribute} = %s;
     """
     query_item = (find_value, )
     if records_ids_list is not None and records_ids_list:
